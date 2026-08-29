@@ -1,21 +1,23 @@
 using API.Features.AddToCart;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.Cart;
 
 public class CartController : Controller
 {
-    private readonly AddToCartCommandHandler _handler;
+    private readonly IMediator _mediator;
 
-    public CartController(AddToCartCommandHandler handler)
+
+    public CartController(IMediator mediator)
     {
-        _handler = handler;
+        _mediator = mediator;
     }
     
 
     public async Task<IActionResult> AddToCart(AddToCartCommand cartCommand)
     {
-       var result = await  _handler.Handle( cartCommand);
+       var result = await  _mediator.Send(cartCommand);
        return Ok(result);
     }
 }

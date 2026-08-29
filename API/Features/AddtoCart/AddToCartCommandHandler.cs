@@ -3,11 +3,12 @@ using API.Data;
 using API.Features.AddToCart.DTOS;
 using API.Models;
 using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Features.AddToCart;
 
-public class AddToCartCommandHandler 
+public class AddToCartCommandHandler : IRequestHandler<AddToCartCommand , ResponseDto>
 {
     private readonly AppDbContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -22,7 +23,8 @@ public class AddToCartCommandHandler
         _commandValidator = commandValidator;
     }
 
-    public async Task<ResponseDto> Handle(AddToCartCommand cartCommand)
+    public async Task<ResponseDto> Handle(AddToCartCommand cartCommand ,
+                                            CancellationToken cancellationToken)
     {
         // validator
         var validationResult = await _commandValidator.ValidateAsync(cartCommand);
@@ -30,7 +32,7 @@ public class AddToCartCommandHandler
             throw new ValidationException(validationResult.Errors);
         // get product
         var product = await _context.Set<Product>().
-                                    FirstOrDefaultAsync(x => x.Id == cartCommand.Id);
+                                    FirstOrDefaultAsync(x => x.Id == cartCommand.Id , cancellationToken);
         if (product is null)
             throw new Exception("Product not found");
         
@@ -68,7 +70,7 @@ public class AddToCartCommandHandler
         {
 
             ProductId = product.Id,
-            Quantity = cart.Count,
+            Quantity = cartCommand.Quantity,
             Message = "Success"
 
         };
@@ -76,5 +78,6 @@ public class AddToCartCommandHandler
 
 
     }
+
 
 }
