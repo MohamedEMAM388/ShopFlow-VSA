@@ -1,6 +1,3 @@
 namespace API.Features.AddToCart;
 
-public class AddToCartCommand
-{
-    
-}
+public record AddToCartCommand(int Id , int Quantity  );
