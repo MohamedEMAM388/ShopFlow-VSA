@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.Cart;
 
+[ApiController]
+[Route("api/[controller]")]
 public class CartController : Controller
 {
     private readonly IMediator _mediator;
@@ -14,7 +16,7 @@ public class CartController : Controller
         _mediator = mediator;
     }
     
-
+    [HttpPost]
     public async Task<IActionResult> AddToCart(AddToCartCommand cartCommand)
     {
        var result = await  _mediator.Send(cartCommand);
